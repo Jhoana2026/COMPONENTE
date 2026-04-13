@@ -1,0 +1,119 @@
+🧾 PASOS ESENCIALES – COMPONENTE JTable + MYSQL (EXAMEN)
+🔵 1. CREAR PROYECTO
+File → New Project → Java Application
+Nombre: cualquiera
+Crear paquete
+🔵 2. AGREGAR MYSQL CONNECTOR
+https://dev.mysql.com/downloads/connector/j/?utm_source=chatgpt.com 
+
+Descargar mysql-connector-j.jar
+Clic derecho proyecto → Properties
+Libraries → Classpath → ➕
+Agregar el .jar
+🔵 3. PROBAR DRIVER (OPCIONAL PERO SEGURO)
+Class.forName("com.mysql.cj.jdbc.Driver");
+🔵 4. CREAR BASE DE DATOS
+CREATE DATABASE componentebd;
+USE componentebd;
+
+CREATE TABLE productos (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(100),
+    precio DECIMAL(10,2),
+    categoria VARCHAR(100)
+);
+
+INSERT INTO productos (nombre, precio, categoria) VALUES
+('Laptop', 850.50, 'Tecnologia'),
+('Mouse', 15.99, 'Accesorios');
+🔵 5. CREAR CLASE COMPONENTE
+
+👉 New Class → JTablaBD
+
+public class JTablaBD extends JScrollPane {
+
+    private JTable tabla;
+
+    public JTablaBD() {
+        tabla = new JTable();
+        setViewportView(tabla);
+    }
+}
+
+✔ IMPORTANTE:
+
+Debe tener constructor vacío
+Debe compilar
+🔵 6. AGREGAR A LA PALETTE
+Abrir JFrame (Design)
+Palette → clic derecho → Palette Manager
+New Category → (ej: ComponentesBD)
+Add from Project → seleccionar JTablaBD
+🔵 7. ARRASTRAR COMPONENTE
+Arrastrar JTablaBD al formulario
+Se crea: jTablaBD1
+🔵 8. MÉTODO PARA CARGAR DATOS
+
+Dentro de JTablaBD:
+
+public void cargarColumna(String base, String tablaBD, String columna) {
+    DefaultTableModel modelo = new DefaultTableModel();
+    modelo.addColumn(columna);
+
+    try {
+        Class.forName("com.mysql.cj.jdbc.Driver");
+        Connection conexion = DriverManager.getConnection(
+            "jdbc:mysql://localhost:3306/" + base,
+            "root",
+            ""
+        );
+
+        String sql = "SELECT " + columna + " FROM " + tablaBD;
+        Statement st = conexion.createStatement();
+        ResultSet rs = st.executeQuery(sql);
+
+        while (rs.next()) {
+            modelo.addRow(new Object[]{rs.getObject(columna)});
+        }
+
+        tabla.setModel(modelo);
+
+    } catch (Exception e) {
+        System.out.println(e.getMessage());
+    }
+}
+🔵 9. COLORES (RENDERER)
+class ColorRenderer extends DefaultTableCellRenderer {
+    @Override
+    public Component getTableCellRendererComponent(
+            JTable table, Object value, boolean isSelected,
+            boolean hasFocus, int row, int column) {
+
+        Component c = super.getTableCellRendererComponent(
+                table, value, isSelected, hasFocus, row, column);
+
+        if (value instanceof Number) {
+            c.setBackground(Color.RED);
+        } else {
+            c.setBackground(Color.GREEN);
+        }
+
+        return c;
+    }
+}
+
+Y aplicar:
+
+tabla.getColumnModel().getColumn(0).setCellRenderer(new ColorRenderer());
+🔵 10. LLAMAR DESDE EL FORMULARIO
+
+En el constructor del JFrame:
+
+jTablaBD1.cargarColumna("componentebd", "productos", "nombre");
+⚠️ ERRORES COMUNES
+❌ No agregar el .jar
+❌ Usar Run en el componente (no tiene main)
+❌ Olvidar initComponents()
+❌ Driver mal escrito
+❌ MySQL apagado
+❌ Nombre de BD/tabla mal

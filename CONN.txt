@@ -1,0 +1,28 @@
+import java.sql.Connection;
+import java.sql.DriverManager;
+/**
+ *
+ * @author Lenovo
+ */
+public class Conexion {
+    public Connection conectar() {
+        Connection conexion = null;
+        
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            
+            conexion = DriverManager.getConnection(
+                "jdbc:mysql://localhost:3306/componentebd",     //ACA SE CAMBIA 
+                "root",
+                ""
+            );
+            
+            System.out.println("Conexion exitosa desde la clase Conexion");
+            
+        } catch (Exception e) {
+            System.out.println("Error de conexion: " + e.getMessage());
+        }
+        
+        return conexion;
+    }
+}
